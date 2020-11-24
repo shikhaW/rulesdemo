@@ -31,8 +31,9 @@ public class RangeConvertor {
 	 * @throws IOException
 	 *             When there is an error processing the file.
 	 */
+	@SuppressWarnings("static-access")
 	public static RangeHolder convertExcelToCells(XSSFWorkbook wb)
-			throws IOException {
+			throws Exception {
 
 		RangeHolder returnValues = new RangeHolder();
 
@@ -43,11 +44,26 @@ public class RangeConvertor {
 		for (int namedRangeIdx = 0; namedRangeIdx < numberOfNames; namedRangeIdx++) {
 			XSSFName aNamedRage = wb.getNameAt(namedRangeIdx);
 			// retrieve the cell at the named range and test its contents
+			System.out.println("TESTWB="+wb.toString());
+			System.out.println("TEST="+aNamedRage.getRefersToFormula());
+			//need to correct this formula here
+			System.out.println("TEST="+aNamedRage.getRefersToFormula().split(",")[0].replace("$7", ":$7").toString()+")");
+			
 			AreaReference aref = new AreaReference(aNamedRage.getRefersToFormula());
-			CellReference[] crefs = aref.getAllReferencedCells();
+			
+			AreaReference[] crefs1 = aref.generateContiguous(aNamedRage.getRefersToFormula());
+			
+			CellReference[] crefs=null;
+			
+			for(int i=0;i<crefs1.length;i++)
+			{
+			crefs = crefs1[i].getAllReferencedCells();
+			}
 
 			// A Range that we will put the new cells into
 			Range redRange = new Range(aNamedRage.getNameName());
+			
+			
 
 			for (int thisCellinRange = 0; thisCellinRange < crefs.length; thisCellinRange++) {
 				XSSFSheet sheet = wb.getSheet(crefs[thisCellinRange]
@@ -77,7 +93,7 @@ public class RangeConvertor {
 
 			returnValues.add(redRange);
 		}
-
+		
 		return returnValues;
 
 	}
