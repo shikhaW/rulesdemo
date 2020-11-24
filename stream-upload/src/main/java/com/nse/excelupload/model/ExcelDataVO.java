@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Name;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.kie.api.KieServices;
 import org.kie.api.command.BatchExecutionCommand;
@@ -57,15 +59,39 @@ public class ExcelDataVO {
 			} else {
 				System.out.println("found file:");
 			}
+			System.out.println("TEST1");
 			wb = new XSSFWorkbook(inputFromExcel);
+			System.out.println("TEST2 text"+wb.toString());
 			// Convert the cell
-			RangeHolder ranges = RangeConvertor.convertExcelToCells(wb);
+			RangeHolder ranges ;
+			try {
+				//
+				/*
+				 * final FormulaEvaluator evaluator =
+				 * wb.getCreationHelper().createFormulaEvaluator(); for (int i = 0; i <
+				 * wb.getNumberOfNames(); i++) { Name name = wb.getNameAt(i); try { if
+				 * (!ranges.contains(name.getNameName()) &&
+				 * !name.getRefersToFormula().equals("#REF!") &&
+				 * name.getSheetName().equals(name.getSheetName())) ; } catch
+				 * (IllegalArgumentException e) { // TODO: Add logging. } }
+				 */
+
+				//
+				ranges = RangeConvertor.convertExcelToCells(wb);
+			
 			return fireRules(ranges.getAllRangesAndCells());
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			System.out.println("exception TEST1 e="+e);
 			e.printStackTrace();
 		}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("exception TEST2 e="+e);
+
+			e.printStackTrace();
+		} // at this line we are getting an error
 
 return null;
 }
@@ -74,8 +100,8 @@ return null;
 	{
 		
 		  String url = "http://localhost:8080/kie-server/services/rest/server";
-	        String username = "kieserver";
-	        String password = "kieserver1!";
+	        String username = "wbadmin";
+	        String password = "wbadmin";
 	        String container = "ExcelRules1_1.0.0";
 	        KieServicesConfiguration config = KieServicesFactory.newRestConfiguration(url, username, password);
 	        Set<Class<?>> allClasses = new HashSet<Class<?>>();
